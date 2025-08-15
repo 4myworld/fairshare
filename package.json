@@ -1,0 +1,41 @@
+{
+  "name": "fairshare",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbo",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "postinstall": "prisma generate"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "dependencies": {
+    "@auth/core": "^0.34.2",
+    "@prisma/client": "^5.15.0",
+    "axios": "^1.6.8",
+    "next": "latest",
+    "next-auth": "^4.24.11",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "stripe": "^18.4.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.0.0",
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^20.14.2",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "eslint": "^9.5.0",
+    "eslint-config-next": "latest",
+    "postcss": "^8.4.38",
+    "prisma": "^5.15.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.4.5"
+  }
+}

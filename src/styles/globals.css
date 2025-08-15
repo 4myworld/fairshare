@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+:root {
+  --fs-navy: #002B5B;
+  --fs-gold: #FFD700;
+}
+
+body { color: #111; background: #fff; }

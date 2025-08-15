@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma" // PlanetScale: no FK constraints
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      String   @default("buyer")
+  createdAt DateTime @default(now())
+
+  // back-relations
+  vendor Vendor? // one User may have one Vendor profile
+  orders Order[] // one User can have many Orders
+}
+
+model Vendor {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  name      String
+  kycStatus String   @default("pending")
+  createdAt DateTime @default(now())
+
+  // back-relations
+  products Product[] // a Vendor has many Products
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  vendorId    String
+  vendor      Vendor   @relation(fields: [vendorId], references: [id])
+  title       String
+  description String?
+  priceCents  Int
+  currency    String   @default("USD")
+  stock       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // back-relations
+  orderItems OrderItem[]
+
+  @@index([vendorId])
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  status        String   @default("pending") // pending | paid | shipped | refunded
+  subtotalCents Int
+  shippingCents Int      @default(0)
+  currency      String   @default("USD")
+  createdAt     DateTime @default(now())
+
+  // back-relations
+  items OrderItem[]
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id         String @id @default(cuid())
+  orderId    String
+  productId  String
+  quantity   Int    @default(1)
+  priceCents Int
+
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+}
