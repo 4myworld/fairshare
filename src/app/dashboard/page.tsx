@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
 import { redirect } from "next/navigation"
-import { isAdmin, isVendor } from "@/lib/roles"
+import { isAdmin, isVendor, type Role } from "@/lib/roles"
 
 export const metadata = { title: "Dashboard" }
 
@@ -9,7 +9,7 @@ export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   if (!session) redirect("/api/auth/signin?callbackUrl=/dashboard")
 
-  const role = (session as any).role as string | undefined
+  const role: Role = session.role
   const name = session.user?.name ?? session.user?.email ?? "User"
 
   return (
@@ -19,7 +19,6 @@ export default async function DashboardPage() {
         <p className="text-sm text-gray-500">Role: {role}</p>
       </header>
 
-      {/* Common widgets for all users */}
       <section className="grid gap-4 md:grid-cols-2">
         <Card title="My Orders">
           <p>View recent orders and status.</p>
@@ -29,7 +28,6 @@ export default async function DashboardPage() {
         </Card>
       </section>
 
-      {/* Vendor/Admin widgets */}
       {(isVendor(role) || isAdmin(role)) && (
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Store Management</h2>
@@ -46,30 +44,21 @@ export default async function DashboardPage() {
           </div>
         </section>
       )}
-
-      {/* Admin‑only widgets */}
-      {isAdmin(role) && (
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold">Admin</h2>
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card href="/admin/users" title="Users & Roles">
-              <p>View users and promote/demote roles.</p>
-            </Card>
-            <Card href="/admin/vendors" title="Vendors">
-              <p>Review KYC and vendor onboarding.</p>
-            </Card>
-            <Card href="/admin/settings" title="Site Settings">
-              <p>Global configuration and feature flags.</p>
-            </Card>
-          </div>
-        </section>
-      )}
     </main>
   )
 }
 
-function Card({ title, children, href }: { title: string; children: React.ReactNode; href?: string }) {
-  const Wrapper = href ? "a" : "div"
+function Card({
+  title,
+  children,
+  href,
+}: {
+  title: string
+  children: React.ReactNode
+  href?: string
+}) {
+  const Wrapper = (href ? "a" : "div") as keyof JSX.IntrinsicElements
+ // okay for intrinsic string elements
   return (
     <Wrapper
       {...(href ? { href } : {})}
